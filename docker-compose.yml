@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_DB: divar
+      POSTGRES_USER: divar_user
+      POSTGRES_PASSWORD: divar_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  data_migrator:
+    build: .
+    container_name: data_migrator
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: "postgresql://divar_user:divar_password@postgres:5432/divar"
+    volumes:
+      - .:/app
+
+volumes:
+  postgres_data:
+    driver: local
